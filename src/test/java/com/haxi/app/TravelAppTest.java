@@ -33,4 +33,21 @@ class TravelAppTest {
         answer = travelApp.doChat(message, chatID);
         Assertions.assertNotNull(answer);
     }
+
+
+    @Test
+    void doChatWithReport() {
+        String chatID = UUID.randomUUID().toString();
+        String message = "你好,我是海绵宝宝，我想去海边玩，但我不知道哪里的海景好看";
+        TravelApp.TravelReport travelReport = travelApp.doChatWithReport(message, chatID);
+        Assertions.assertNotNull(travelReport);
+    }
+
+    @Test
+    void doChatWithRag() {
+        String chatID = UUID.randomUUID().toString();
+        String message = "你好，我想临时来场自由行，但我不知道是否来得及现场买票";
+        String answer = travelApp.doChatWithRag(message, chatID);
+        Assertions.assertNotNull(answer);
+    }
 }
