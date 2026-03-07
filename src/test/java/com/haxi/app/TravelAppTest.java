@@ -46,7 +46,7 @@ class TravelAppTest {
     @Test
     void doChatWithRag() {
         String chatID = UUID.randomUUID().toString();
-        String message = "你好，我想临时来场自由行，但我不知道是否来得及现场买票";
+        String message = "你好，我想来场临时来场灵活自由行，但我不知道做哪些准备";
         String answer = travelApp.doChatWithRag(message, chatID);
         Assertions.assertNotNull(answer);
     }

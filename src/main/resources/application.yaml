@@ -3,6 +3,25 @@ spring:
     name: haxi-ai-agent
   profiles:
     active: local
+  ai:
+    dashscope:
+      api-key: ${DASHSCOPE_API_KEY}
+      chat:
+        options:
+          model: qwen-max
+      embedding:
+        options:
+          model: text-embedding-v1
+  datasource:
+    url: jdbc:postgresql://rm-cn-2ui4op76e00017ro.rwlb.rds.aliyuncs.com:5432/he_ai_agent
+    username: my_user
+    password: Liu040612
+  vectorstore:
+    pgvector:
+    index-type: HNSW
+    distance-type: COSINE_DISTANCE
+    dimensions: 1536
+    max-document-batch-size: 10000 # Optional: Maximum number of documents per batch
 server:
   port: 8123
   servlet:
