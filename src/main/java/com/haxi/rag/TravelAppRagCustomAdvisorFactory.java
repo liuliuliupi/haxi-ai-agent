@@ -34,7 +34,7 @@ public class TravelAppRagCustomAdvisorFactory {
                 .build();
         return RetrievalAugmentationAdvisor.builder()
                 .documentRetriever(documentRetriever)
-//                .queryAugmenter(TravelAppContextualQueryAugmenterFactory.createInstance())
+                .queryAugmenter(TravelAppContextualQueryAugmenterFactory.createInstance())
                 .build();
     }
 }

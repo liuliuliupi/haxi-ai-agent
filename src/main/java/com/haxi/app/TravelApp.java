@@ -131,9 +131,9 @@ public class TravelApp {
                 // 开启日志，便于观察效果
                 .advisors(new MyLoggerAdvisor())
                 // 应用 RAG 知识库问答（基于内存）
-//                .advisors(QuestionAnswerAdvisor.builder(travelAppVectorStore).build())
+                .advisors(QuestionAnswerAdvisor.builder(travelAppVectorStore).build())
                 // 应用 RAG 检索增强服务（基于云知识库服务）
-                .advisors(travelAppRagCloudAdvisor)
+//                .advisors(travelAppRagCloudAdvisor)
                 // 应用 RAG 检索增强服务（基于 PgVector 向量存储）
 //                .advisors(QuestionAnswerAdvisor.builder(pgVectorVectorStore).build())
                 // 应用自定义的 RAG 检索增强服务（文档查询器 + 上下文增强器）
