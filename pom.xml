@@ -96,7 +96,13 @@
 <!--			<artifactId>spring-ai-starter-vector-store-pgvector</artifactId>-->
 <!--			<version>1.1.2</version>-->
 <!--		</dependency>-->
-<!--		集成jsoup html解析库-->
+		<!--Spring AI MCP Client-->
+		<dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-starter-mcp-client</artifactId>
+			<version>1.1.2</version>
+		</dependency>
+		<!--集成jsoup html解析库-->
 		<dependency>
 			<!-- jsoup HTML parser library @ https://jsoup.org/ -->
 			<groupId>org.jsoup</groupId>

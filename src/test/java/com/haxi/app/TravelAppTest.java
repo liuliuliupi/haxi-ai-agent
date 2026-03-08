@@ -77,4 +77,17 @@ class TravelAppTest {
         String answer = travelApp.doChatWithTools(message, chatId);
         Assertions.assertNotNull(answer);
     }
+
+    @Test
+    void doChatWithMcp() {
+        String chatId = UUID.randomUUID().toString();
+        // 测试地图 MCP
+//        String message = "我的驴友居住在青岛市黄岛区，请帮我找到 10 公里内合适的登山地点";
+//        String answer =  travelApp.doChatWithMcp(message, chatId);
+//        Assertions.assertNotNull(answer);
+        // 测试图片搜索 MCP
+        String message = "帮我搜索一些适合拍毕业照的风景图片";
+        String answer =  travelApp.doChatWithMcp(message, chatId);
+        Assertions.assertNotNull(answer);
+    }
 }

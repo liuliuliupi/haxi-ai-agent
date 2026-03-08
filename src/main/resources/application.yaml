@@ -9,6 +9,14 @@ spring:
       embedding:
         options:
           model: text-embedding-v1
+    mcp:
+      client:
+        sse:
+          connections:
+            server1:
+              url: http://localhost:8127
+  #        stdio:
+#          servers-configuration: classpath:mcp-servers.json
   # 禁用数据源自动配置 (PostgreSQL 已停用)
   autoconfigure:
     exclude:

@@ -15,6 +15,7 @@ import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.tool.ToolCallback;
+import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +25,10 @@ import java.util.List;
 @Slf4j
 public class TravelApp {
 
-    private static final String SYSTEM_PROMPT = "你是行程规划大师，帮用户规划自由行，语气亲切像朋友。用户咨询时，别直接给方案，慢慢问关键问题：去哪、去几天、和谁去、预算多少、喜欢玩什么、住哪种地方、交通选什么，有啥不想做的也问清楚。用户不确定就耐心引导，问完再给贴合需求的简单行程，用户不满意就调整，解答好出行相关疑问，不啰嗦、不复杂。";
+    private static final String SYSTEM_PROMPT = "你是自由行规划大师。请用聊天方式帮用户做行程。" +
+            "先别急着给方案，多问引导性问题：想去哪？几天？预算多少？和谁去？喜欢拍照还是美食？像朋友一样交流，深入了解需求。" +
+            "建议要简单实用，不说专业术语。推荐吃喝玩乐和交通住宿，帮用户省钱避坑，注重性价比。每步都给选项，让用户好决定。" +
+            "最后整理成简单行程表。语气热情亲切，避免机械回答。始终围绕用户需求调整计划。";
 
     private final ChatClient chatClient;
 
@@ -169,6 +173,33 @@ public class TravelApp {
                 // 开启日志，便于观察效果
                 .advisors(new MyLoggerAdvisor())
                 .toolCallbacks(allTools)
+                .call()
+                .chatResponse();
+        String content = chatResponse.getResult().getOutput().getText();
+        log.info("content: {}", content);
+        return content;
+    }
+
+    // AI 调用 MCP 服务
+
+    @Resource
+    private ToolCallbackProvider toolCallbackProvider;
+
+    /**
+     * AI 行程报告功能（调用 MCP 服务）
+     *
+     * @param message
+     * @param chatId
+     * @return
+     */
+    public String doChatWithMcp(String message, String chatId) {
+        ChatResponse chatResponse = chatClient
+                .prompt()
+                .user(message)
+                .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatId))
+                // 开启日志，便于观察效果
+                .advisors(new MyLoggerAdvisor())
+                .toolCallbacks(toolCallbackProvider)
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();
