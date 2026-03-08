@@ -50,3 +50,5 @@ knife4j:
 logging:
   level:
     org.springframework.ai: DEBUG
+search-api:
+  api-key: 你的API key
