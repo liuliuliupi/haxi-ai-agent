@@ -34,7 +34,7 @@ public class TravelAppVectorStoreConfig {
 //        List<Document> splitDocuments = myTokenTextSplitter.splitCustomized(documentList);
         // 自动补充关键词元信息
 //        List<Document> enrichedDocuments = myKeywordEnricher.enrichDocuments(documentList);
-//        simpleVectorStore.add(enrichedDocuments);
+        simpleVectorStore.add(documentList);
         return simpleVectorStore;
     }
 }

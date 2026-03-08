@@ -11,7 +11,7 @@ public class Langchain4jAiInvoke {
 
         ChatModel qwenChatModel = QwenChatModel.builder()
                 .apiKey(apiKey)
-                .modelName("qwen-plus")
+                .modelName("qwen3.5-flash")
                 .build();
 
         String answer = qwenChatModel.chat("我是派大星");

@@ -8,7 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 /**
- * spring AI框架调用大模型
+ * spring AI 框架调用大模型
  */
 @Component
 public class SpringAiAiInvoke implements CommandLineRunner {

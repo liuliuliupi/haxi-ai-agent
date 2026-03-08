@@ -2,6 +2,7 @@ package com.haxi.app;
 
 import com.haxi.advisor.MyLoggerAdvisor;
 import com.haxi.advisor.ReReadingAdvisor;
+import com.haxi.rag.QueryRewriter;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -48,7 +49,7 @@ public class TravelApp {
                         // 自定义日志 Advisor，可按需开启
                         new MyLoggerAdvisor()
                         //自定义推理增强Advisor,可按需开启（用户消息*2，输入token翻倍，成本上升）
-                        ,new ReReadingAdvisor()
+//                        ,new ReReadingAdvisor()
                 )
                 .build();
     }
@@ -109,8 +110,8 @@ public class TravelApp {
     @Resource
     private VectorStore pgVectorVectorStore;
 
-//    @Resource
-//    private QueryRewriter queryRewriter;
+    @Resource
+    private QueryRewriter queryRewriter;
 
     /**
      * 和 RAG 知识库进行对话
@@ -120,18 +121,27 @@ public class TravelApp {
      * @return
      */
     public String doChatWithRag(String message, String chatId) {
+        // 查询重写
+        String rewrittenMessage = queryRewriter.doQueryRewrite(message);
         ChatResponse chatResponse = chatClient
                 .prompt()
-                .user(message)
+                // 使用改写后的查询
+                .user(rewrittenMessage)
                 .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatId))
                 // 开启日志，便于观察效果
                 .advisors(new MyLoggerAdvisor())
                 // 应用 RAG 知识库问答（基于内存）
-                .advisors(QuestionAnswerAdvisor.builder(travelAppVectorStore).build())
+//                .advisors(QuestionAnswerAdvisor.builder(travelAppVectorStore).build())
                 // 应用 RAG 检索增强服务（基于云知识库服务）
-//                .advisors(travelAppRagCloudAdvisor)
+                .advisors(travelAppRagCloudAdvisor)
                 // 应用 RAG 检索增强服务（基于 PgVector 向量存储）
 //                .advisors(QuestionAnswerAdvisor.builder(pgVectorVectorStore).build())
+                // 应用自定义的 RAG 检索增强服务（文档查询器 + 上下文增强器）
+//                .advisors(
+//                        TravelAppRagCustomAdvisorFactory.createTravelAppRagCustomAdvisor(
+//                                travelAppVectorStore, "自由"
+//                        )
+//                )
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();

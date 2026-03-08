@@ -12,7 +12,7 @@ import cn.hutool.json.JSONUtil;
 public class HttpAiInvoke {
     public static void main(String[] args) {
         String apiKey = "DASHSCOPE_API_KEY"; // 替换为实际的 API Key
-        String url = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
+        String url = "https://dashscope.aliyuncs.com/api/v1";
 
         // 构建消息数组
         JSONArray messages = JSONUtil.createArray();
@@ -25,7 +25,7 @@ public class HttpAiInvoke {
 
         // 构建请求体
         JSONObject requestBody = new JSONObject()
-                .set("model", "qwen-plus")
+                .set("model", "qwen3.5-flash")
                 .set("messages", messages);
 
         // 发送 POST 请求

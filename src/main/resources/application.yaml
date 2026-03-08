@@ -6,22 +6,23 @@ spring:
   ai:
     dashscope:
       api-key: ${DASHSCOPE_API_KEY}
-      chat:
-        options:
-          model: qwen-max
       embedding:
         options:
           model: text-embedding-v1
-  datasource:
-    url: jdbc:postgresql://rm-cn-2ui4op76e00017ro.rwlb.rds.aliyuncs.com:5432/he_ai_agent
-    username: my_user
-    password: Liu040612
-  vectorstore:
-    pgvector:
-    index-type: HNSW
-    distance-type: COSINE_DISTANCE
-    dimensions: 1536
-    max-document-batch-size: 10000 # Optional: Maximum number of documents per batch
+  # 禁用数据源自动配置 (PostgreSQL 已停用)
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+#  datasource:
+#    url: jdbc:postgresql://rm-cn-htd4opu890001rho.rwlb.rds.aliyuncs.com/he_ai_agent
+#    username: my_user
+#    password: Liu040612
+#  vectorstore:
+#    pgvector:
+#      index-type: HNSW
+#      distance-type: COSINE_DISTANCE
+#      dimensions: 1536
+#      max-document-batch-size: 10000 # Optional: Maximum number of documents per batch
 server:
   port: 8123
   servlet:
@@ -45,3 +46,7 @@ knife4j:
     language: zh_cn
   resources:
     enabled: true
+# 修改日志级别，查看 Spring AI 更多调用细节
+logging:
+  level:
+    org.springframework.ai: DEBUG

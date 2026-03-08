@@ -22,7 +22,7 @@ public class TravelAppRagCloudAdvisorConfig {
     private String dashScopeApiKey;
 
     @Bean
-    public Advisor loveAppRagCloudAdvisor() {
+    public Advisor travelAppRagCloudAdvisor() {
         DashScopeApi dashScopeApi = DashScopeApi.builder()
                 .apiKey(dashScopeApiKey)
                 .build();

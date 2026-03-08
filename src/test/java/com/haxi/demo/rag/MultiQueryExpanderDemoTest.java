@@ -1,0 +1,23 @@
+package com.haxi.demo.rag;
+
+import jakarta.annotation.Resource;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.ai.rag.Query;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
+
+
+@SpringBootTest
+class MultiQueryExpanderDemoTest {
+
+    @Resource
+    private MultiQueryExpanderDemo multiQueryExpanderDemo;
+
+    @Test
+    void expand() {
+        List<Query> queries = multiQueryExpanderDemo.expand("谁是海绵宝宝啵啵啵啵啵啵？请回答我哦哦哦哦哦哦");
+        Assertions.assertNotNull(queries);
+    }
+}
