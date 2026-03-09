@@ -17,6 +17,7 @@ public class ToolRegistration {
 
     @Bean
     public ToolCallback[] allTools() {
+        // 将工具类注册为 Bean，让 Spring 管理
         FileOperationTool fileOperationTool = new FileOperationTool();
         WebSearchTool webSearchTool = new WebSearchTool(searchApiKey);
         WebScrapingTool webScrapingTool = new WebScrapingTool();
@@ -24,7 +25,9 @@ public class ToolRegistration {
         TerminalOperationTool terminalOperationTool = new TerminalOperationTool();
         PDFGenerationTool pdfGenerationTool = new PDFGenerationTool();
         TerminateTool terminateTool = new TerminateTool();
-        return ToolCallbacks.from(
+        
+        // 使用 ToolCallbacks.from() 创建工具回调数组
+        ToolCallback[] toolCallbacks = ToolCallbacks.from(
                 fileOperationTool,
                 webSearchTool,
                 webScrapingTool,
@@ -33,5 +36,13 @@ public class ToolRegistration {
                 pdfGenerationTool,
                 terminateTool
         );
+        
+        // 输出调试信息
+        System.out.println("Registered tools count: " + toolCallbacks.length);
+        for (ToolCallback tool : toolCallbacks) {
+            System.out.println("Tool: " + tool.getToolDefinition().name());
+        }
+        
+        return toolCallbacks;
     }
 }
