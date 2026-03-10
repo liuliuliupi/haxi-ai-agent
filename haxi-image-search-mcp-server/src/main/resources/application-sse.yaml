@@ -7,3 +7,7 @@ spring:
         type: sync
         # sse
         stdio: false
+
+# 添加 API Key 配置
+search-api:
+  api-key: uTDcWT4VQGe6t8WSiAGPLJ2XMLYtGbFtArwzG8e5yTP1jRYfd3w5TDjp
