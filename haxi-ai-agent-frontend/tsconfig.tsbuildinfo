@@ -1,0 +1,1 @@
+{"root":["./src/env.d.ts","./src/main.ts","./src/router/index.ts","./src/utils/axios.ts","./src/utils/sse.ts","./src/app.vue","./src/views/homeview.vue","./src/views/manusworkbench.vue","./src/views/travelworkbench.vue"],"version":"5.7.3"}
