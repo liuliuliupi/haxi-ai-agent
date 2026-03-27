@@ -51,25 +51,32 @@ export class SSEManager {
         const { done, value } = await reader.read()
 
         if (done) {
-          if (buffer.trim()) {
-            const parsed = this.parseSSEData(buffer)
-            if (parsed) {
-              this.onMessage(parsed)
+          // 处理剩余的 buffer
+          if (buffer) {
+            const lines = buffer.split(/\r?\n/)
+            for (const line of lines) {
+              if (line.startsWith('data:')) {
+                const data = line.slice(5)
+                if (data !== '[DONE]') {
+                  this.onMessage(data)
+                }
+              }
             }
           }
           break
         }
 
         buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
+        const lines = buffer.split(/\r?\n/)
+        // 保留最后一行（可能不完整）
         buffer = lines.pop() || ''
 
         for (const line of lines) {
-          if (line.trim() === '' || line.startsWith(':')) continue
-          
-          const parsed = this.parseSSEData(line)
-          if (parsed) {
-            this.onMessage(parsed)
+          if (line.startsWith('data:')) {
+            const data = line.slice(5)
+            if (data !== '[DONE]') {
+              this.onMessage(data)
+            }
           }
         }
       }
@@ -84,16 +91,7 @@ export class SSEManager {
     return this
   }
 
-  private parseSSEData(line: string): string | null {
-    if (line.startsWith('data:')) {
-      const data = line.slice(5).trim()
-      if (data === '[DONE]') {
-        return null
-      }
-      return data
-    }
-    return null
-  }
+
 
   close() {
     if (this.controller) {

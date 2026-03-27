@@ -51,13 +51,13 @@ function sendMessage() {
       message: messageText
     },
     (data: string) => {
-      if (data && data.trim()) {
-        if (data.includes('\n\n') || (data.startsWith('步骤') || data.startsWith('Step') || data.startsWith('1.') || data.startsWith('['))) {
+      if (data !== null && data !== undefined) {
+        if (data.includes('\n\n') || (data.trim().startsWith('步骤') || data.trim().startsWith('Step') || data.trim().startsWith('1.') || data.trim().startsWith('['))) {
           currentStepNumber++
           const stepMessage: Message = {
             id: Date.now() + '_' + currentStepNumber,
             role: 'assistant',
-            content: data.trim(),
+            content: data,
             timestamp: Date.now(),
             isStep: true,
             stepNumber: currentStepNumber

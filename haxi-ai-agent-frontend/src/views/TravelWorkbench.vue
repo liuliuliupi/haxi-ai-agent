@@ -63,7 +63,7 @@ function sendMessage() {
       chatId: chatId.value
     },
     (data: string) => {
-      if (data && data.trim()) {
+      if (data !== null && data !== undefined) {
         const lastMsg = messages.value[currentAssistantIndex.value]
         if (lastMsg) {
           lastMsg.content += data
@@ -154,7 +154,7 @@ onUnmounted(() => {
               <span v-if="message.content" class="content-text" itemprop="text">{{ message.content }}</span>
               <span v-else class="typing-indicator">正在输入<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>
             </template>
-            <p v-else itemprop="text">{{ message.content }}</p>
+            <span v-else class="content-text" itemprop="text">{{ message.content }}</span>
           </div>
           <span class="timestamp">{{ new Date(message.timestamp).toLocaleTimeString() }}</span>
         </div>
