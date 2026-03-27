@@ -52,36 +52,43 @@ function sendMessage() {
     },
     (data: string) => {
       if (data !== null && data !== undefined) {
-        if (data.includes('\n\n') || (data.trim().startsWith('步骤') || data.trim().startsWith('Step') || data.trim().startsWith('1.') || data.trim().startsWith('['))) {
-          currentStepNumber++
-          const stepMessage: Message = {
-            id: Date.now() + '_' + currentStepNumber,
-            role: 'assistant',
-            content: data,
-            timestamp: Date.now(),
-            isStep: true,
-            stepNumber: currentStepNumber
-          }
-          messages.value.push(stepMessage)
-        } else {
-          const lastMsg = messages.value[messages.value.length - 1]
-          if (lastMsg && lastMsg.role === 'assistant') {
-            lastMsg.content += data
-          } else {
+        // 格式化输出内容，美化但不丢失任何内容
+        let formattedData = data
+        // 将 "Step X: 工具 XXX 返回的结果：" 替换为 "[调用工具：XXX]"
+        formattedData = formattedData.replace(/Step \d+: 工具 (\w+) 返回的结果：/g, '[调用工具：$1]\n')
+        
+        if (formattedData && formattedData.trim()) {
+          if (data.includes('\n\n') || (data.trim().startsWith('步骤') || data.trim().startsWith('Step') || data.trim().startsWith('1.') || data.trim().startsWith('['))) {
             currentStepNumber++
             const stepMessage: Message = {
               id: Date.now() + '_' + currentStepNumber,
               role: 'assistant',
-              content: data,
+              content: formattedData,
               timestamp: Date.now(),
               isStep: true,
               stepNumber: currentStepNumber
             }
             messages.value.push(stepMessage)
+          } else {
+            const lastMsg = messages.value[messages.value.length - 1]
+            if (lastMsg && lastMsg.role === 'assistant') {
+              lastMsg.content += formattedData
+            } else {
+              currentStepNumber++
+              const stepMessage: Message = {
+                id: Date.now() + '_' + currentStepNumber,
+                role: 'assistant',
+                content: formattedData,
+                timestamp: Date.now(),
+                isStep: true,
+                stepNumber: currentStepNumber
+              }
+              messages.value.push(stepMessage)
+            }
           }
+          messages.value = [...messages.value]
+          scrollToBottom()
         }
-        messages.value = [...messages.value]
-        scrollToBottom()
       }
     },
     (error: Error) => {
