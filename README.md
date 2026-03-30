@@ -90,14 +90,3 @@ haxi-ai-agent/
 │
 ├── src/main/resources/ # 配置文件
 └── pom.xml # Maven 配置
-
-
-## 🚀 快速开始
-
-### 前置要求
-
-- JDK 21+
-- Node.js 18+
-- Maven 3.8+
-- PostgreSQL 14+ (需安装 pgvector 扩展)
-- 阿里云百炼 API Key
