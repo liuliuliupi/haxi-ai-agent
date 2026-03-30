@@ -65,28 +65,28 @@ Haxi AI Agent 是一个功能完善的 AI Agent 框架实现，提供了从基�
 - **语言**: TypeScript 5.7.2
  
 ## 📁 项目结构
+```text
 haxi-ai-agent/
-├── haxi-ai-agent-frontend/ # 前端应用 (Vue 3)
-│ ├── src/
-│ │ ├── views/ # 页面视图
-│ │ ├── router/ # 路由配置
-│ │ └── utils/ # 工具函数
-│ └── package.json
+├── 📦 haxi-ai-agent-frontend/     │   ├── views/
+│   │   ├── HomeView.vue            #   首页 - 工作台导航入口
+│   │   ├── TravelWorkbench.vue     #   旅行规划聊天界面
+│   │   └── ManusWorkbench.vue      #   Manus 通用智能体界面
+│   ├── utils/
+│   │   ├── axios.ts                #   HTTP 请求封装
+│   │   └── sse.ts                  #   SSE 连接管理器
+│   └── router/index.ts             #   路由配置
 │
-├── haxi-image-search-mcp-server/ # 图像搜索 MCP 服务器
-│ └── src/
-│ ├── main/java/
-│ └── test/java/
+├── 📦 haxi-image-search-mcp-server/ # MCP 图片搜索服务（独立部署）
+│   └── src/main/java/com/haxi/     #   图片搜索工具实现
 │
-├── src/main/java/com/haxi/ # 后端核心代码
-│ ├── HaxiAiAgentApplication.java # 启动类
-│ ├── agent/ # Agent 实现
-│ ├── advisor/ # Advisor 策略
-│ ├── chatmemory/ # 聊天记忆
-│ ├── config/ # 配置类
-│ ├── controller/ # REST 控制器
-│ ├── rag/ # RAG 流水线
-│ └── tools/ # 工具实现
-│
-├── src/main/resources/ # 配置文件
-└── pom.xml # Maven 配置
+└── 📦 ./                            # 主后端服务
+    └── src/main/java/com/haxi/
+        ├── agent/                   #   Agent 框架（核心）
+        ├── app/                     #   业务应用（TravelApp）
+        ├── tools/                   #   工具集
+        ├── rag/                     #   RAG 管道
+        ├── advisor/                 #   自定义 Advisor
+        ├── chatmemory/              #   对话记忆持久化
+        ├── controller/              #   REST API 端点
+        └── config/                  #   配置类
+```
