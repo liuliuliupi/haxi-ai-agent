@@ -19,6 +19,13 @@ const messagesContainer = ref<HTMLElement | null>(null)
 const currentAssistantIndex = ref(-1)
 let sseManager: SSEManager | null = null
 
+// 将文本中的换行符转换为 <br> 标签
+function formatText(text: string): string {
+  if (!text) return ''
+  // 将换行符替换为 <br>
+  return text.replace(/\n/g, '<br>')
+}
+
 function generateChatId(): string {
   return 'travel_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
 }
@@ -151,7 +158,7 @@ onUnmounted(() => {
         <div class="message-content">
           <div class="bubble">
             <template v-if="message.role === 'assistant'">
-              <span v-if="message.content" class="content-text" itemprop="text">{{ message.content }}</span>
+              <span v-if="message.content" class="content-text" itemprop="text" v-html="formatText(message.content)"></span>
               <span v-else class="typing-indicator">正在输入<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span>
             </template>
             <span v-else class="content-text" itemprop="text">{{ message.content }}</span>
@@ -412,14 +419,15 @@ onUnmounted(() => {
 
 .bubble p {
   margin: 0;
-  white-space: pre-wrap;
+  white-space: normal;
   word-wrap: break-word;
 }
 
 .content-text {
-  white-space: pre-wrap;
+  white-space: normal;
   word-wrap: break-word;
   display: block;
+  line-height: 1.8;
 }
 
 .timestamp {

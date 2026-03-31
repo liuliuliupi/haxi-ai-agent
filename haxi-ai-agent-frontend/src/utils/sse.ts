@@ -54,11 +54,15 @@ export class SSEManager {
           // 处理剩余的 buffer
           if (buffer) {
             const lines = buffer.split(/\r?\n/)
-            for (const line of lines) {
+            for (let i = 0; i < lines.length; i++) {
+              const line = lines[i]
               if (line.startsWith('data:')) {
                 const data = line.slice(5)
                 if (data !== '[DONE]') {
-                  this.onMessage(data)
+                  // 检查下一行是否也是 data: 开头，如果是则添加换行符
+                  const nextLine = lines[i + 1]
+                  const hasMoreData = nextLine && nextLine.startsWith('data:')
+                  this.onMessage(data + (hasMoreData ? '\n' : ''))
                 }
               }
             }
@@ -71,11 +75,15 @@ export class SSEManager {
         // 保留最后一行（可能不完整）
         buffer = lines.pop() || ''
 
-        for (const line of lines) {
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i]
           if (line.startsWith('data:')) {
             const data = line.slice(5)
             if (data !== '[DONE]') {
-              this.onMessage(data)
+              // 检查下一行是否也是 data: 开头，如果是则添加换行符
+              const nextLine = lines[i + 1]
+              const hasMoreData = nextLine && nextLine.startsWith('data:')
+              this.onMessage(data + (hasMoreData ? '\n' : ''))
             }
           }
         }
