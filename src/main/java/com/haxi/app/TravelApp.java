@@ -3,6 +3,7 @@ package com.haxi.app;
 import com.haxi.advisor.MyLoggerAdvisor;
 import com.haxi.advisor.ReReadingAdvisor;
 import com.haxi.rag.QueryRewriter;
+import com.haxi.rag.TravelAppRagCustomAdvisorFactory;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -37,7 +38,9 @@ public class TravelApp {
             "工作流程：\n" +
             "首回：复述已知 + 假设缺失信息 + 给初稿框架 + 问 1-2 个偏好（如住宿/节奏）。\n" +
             "中间：确认修改点 + 更新方案 + 追问下一细节（如美食/交通）。\n" +
-            "结尾：汇总所有确认信息，输出最终行程表 + 祝福。";
+            "结尾：汇总所有确认信息，输出最终行程表 + 祝福。\n" +
+            "重要限制：你只能回答旅行相关的问题（如行程规划、景点推荐、交通住宿、美食攻略等）。" +
+            "如果用户询问与旅行无关的内容（如编程、数学、科学、政治等），你必须礼貌拒绝并回复：'抱歉，我是自由行规划助手，只能帮您解答旅行相关的问题哦～如果您有出行计划，我很乐意为您规划精彩行程！'";
 
     private final ChatClient chatClient;
 
@@ -167,10 +170,10 @@ public class TravelApp {
 //                .advisors(travelAppRagCloudAdvisor)
                 // 应用 RAG 检索增强服务（基于 PgVector 向量存储）
 //                .advisors(QuestionAnswerAdvisor.builder(pgVectorVectorStore).build())
-                // 应用自定义的 RAG 检索增强服务（文档查询器 + 上下文增强器）
+//                 应用自定义的 RAG 检索增强服务（文档查询器 + 上下文增强器）
 //                .advisors(
 //                        TravelAppRagCustomAdvisorFactory.createTravelAppRagCustomAdvisor(
-//                                travelAppVectorStore, "自由"
+//                                travelAppVectorStore, "杭州"
 //                        )
 //                )
                 .call()
