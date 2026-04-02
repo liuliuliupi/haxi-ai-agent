@@ -25,6 +25,7 @@ public class ToolRegistration {
         TerminalOperationTool terminalOperationTool = new TerminalOperationTool();
         PDFGenerationTool pdfGenerationTool = new PDFGenerationTool();
         TerminateTool terminateTool = new TerminateTool();
+        GaoDeIPTool gaoDeIPTool = new GaoDeIPTool(System.getenv("GAODE_API_KEY") != null ? System.getenv("GAODE_API_KEY") : "");
         
         // 使用 ToolCallbacks.from() 创建工具回调数组
         ToolCallback[] toolCallbacks = ToolCallbacks.from(
@@ -34,7 +35,8 @@ public class ToolRegistration {
                 resourceDownloadTool,
                 terminalOperationTool,
                 pdfGenerationTool,
-                terminateTool
+                terminateTool,
+                gaoDeIPTool
         );
         
         // 输出调试信息

@@ -1,7 +1,25 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
 
 const router = useRouter()
+const locationInfo = ref<{city: string, province: string} | null>(null)
+
+onMounted(async () => {
+  try {
+    const response = await fetch('/api/ai/location/ip')
+    const data = await response.json()
+    
+    if (data.city || data.province) {
+      locationInfo.value = {
+        city: data.city || '',
+        province: data.province || ''
+      }
+    }
+  } catch (error) {
+    console.error('获取位置信息失败:', error)
+  }
+})
 
 const workbenches = [
   {
@@ -35,6 +53,12 @@ function navigateTo(route: string) {
       <header class="header">
         <h1 class="title" itemprop="name">Haxi AI Agent</h1>
         <p class="subtitle" itemprop="description">智能交互 · 无限可能</p>
+        
+        <!-- 位置信息显示 -->
+        <div v-if="locationInfo" class="location-display">
+          <span class="location-icon">📍</span>
+          <span class="location-text">检测到您在：<strong>{{ locationInfo.province }}{{ locationInfo.city }}</strong></span>
+        </div>
       </header>
 
       <main class="main-content">
@@ -148,6 +172,50 @@ function navigateTo(route: string) {
   margin-bottom: 60px;
   position: relative;
   z-index: 1;
+}
+
+.location-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 8px 16px;
+  background: rgba(79, 70, 229, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(79, 70, 229, 0.2);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.location-icon {
+  font-size: 1.1rem;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+.location-text strong {
+  color: #a78bfa;
+  font-weight: 600;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
 .title {

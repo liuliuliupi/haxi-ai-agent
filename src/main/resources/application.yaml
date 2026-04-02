@@ -59,4 +59,8 @@ logging:
   level:
     org.springframework.ai: DEBUG
 search-api:
-  api-key: 你的API key
+  api-key: 你的 API key
+# 高德地图 API 配置
+gaode:
+  api:
+    key: ${GAODE_API_KEY:}

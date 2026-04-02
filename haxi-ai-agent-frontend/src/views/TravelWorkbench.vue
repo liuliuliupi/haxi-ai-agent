@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onUnmounted, nextTick } from 'vue'
+import { ref, onUnmounted, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { createSSEConnection, SSEManager } from '@/utils/sse'
 
@@ -10,6 +10,12 @@ interface Message {
   timestamp: number
 }
 
+interface LocationInfo {
+  city: string
+  province: string
+  location: string
+}
+
 const router = useRouter()
 const messages = ref<Message[]>([])
 const inputMessage = ref('')
@@ -18,6 +24,57 @@ const chatId = ref('')
 const messagesContainer = ref<HTMLElement | null>(null)
 const currentAssistantIndex = ref(-1)
 let sseManager: SSEManager | null = null
+const userLocation = ref<LocationInfo | null>(null)
+const showLocationTip = ref(false)
+
+onMounted(async () => {
+  await fetchUserLocation()
+})
+
+async function fetchUserLocation() {
+  try {
+    const response = await fetch('/api/ai/location/ip')
+    const data = await response.json()
+    
+    if (data.city || data.province) {
+      userLocation.value = {
+        city: data.city || '',
+        province: data.province || '',
+        location: data.location || ''
+      }
+      showLocationTip.value = true
+      
+      setTimeout(() => {
+        showLocationTip.value = false
+      }, 5000)
+    }
+  } catch (error) {
+    console.error('获取位置信息失败:', error)
+  }
+}
+
+function getWelcomeMessage(): string {
+  if (!userLocation.value) {
+    return '告诉我您想去的地方、时间和预算，我来为您规划最佳行程'
+  }
+  
+  const location = userLocation.value.city || userLocation.value.province
+  return `检测到您在${location}，告诉我您想去哪里、什么时候出发和预算，我来为您规划最佳行程`
+}
+
+function useQuickQuery(type: string) {
+  if (!userLocation.value) return
+  
+  const location = userLocation.value.city || userLocation.value.province
+  const queries: Record<string, string> = {
+    '周末游': `我从${location}出发，想安排一个周末 2-3 天的短途旅行，请推荐合适的目的地和行程规划`,
+    '周边景点': `我在${location}，请推荐周边值得游玩的景点和一日游路线`,
+    '美食推荐': `我想了解${location}的特色美食和必吃餐厅推荐`
+  }
+  
+  inputMessage.value = queries[type] || ''
+  sendMessage()
+}
 
 // 将文本中的换行符转换为 <br> 标签
 function formatText(text: string): string {
@@ -118,8 +175,20 @@ onUnmounted(() => {
 
 <template>
   <div class="workbench" itemscope itemtype="https://schema.org/ChatApplication">
-    <meta itemprop="name" content="AI自由行行程规划大师" />
+    <meta itemprop="name" content="AI 自由行行程规划大师" />
     <meta itemprop="description" content="智能规划您的旅行行程，打造个性化出行方案" />
+    
+    <!-- 位置提示 -->
+    <transition name="slide-down">
+      <div v-if="showLocationTip && userLocation" class="location-tip">
+        <span class="location-icon">📍</span>
+        <span class="location-text">
+          已自动定位到：<strong>{{ userLocation.province }}{{ userLocation.city }}</strong>
+          <span class="tip-hint">规划行程时将考虑您的当前位置</span>
+        </span>
+      </div>
+    </transition>
+    
     <header class="header">
       <div class="header-left">
         <button class="back-btn" @click="goHome">←</button>
@@ -137,7 +206,20 @@ onUnmounted(() => {
       <div class="welcome" v-if="messages.length === 0">
         <div class="welcome-icon">✈️</div>
         <h2>开启您的自由行之旅</h2>
-        <p>告诉我您想去的地方、时间和预算，我来为您规划最佳行程</p>
+        <p>{{ getWelcomeMessage() }}</p>
+        
+        <!-- 快捷提问按钮 -->
+        <div v-if="userLocation" class="quick-actions">
+          <button class="quick-btn" @click="useQuickQuery('周末游')">
+            🚗 从{{ userLocation.city || userLocation.province }}出发周末游
+          </button>
+          <button class="quick-btn" @click="useQuickQuery('周边景点')">
+            🏞️ {{ userLocation.city || userLocation.province }}周边景点推荐
+          </button>
+          <button class="quick-btn" @click="useQuickQuery('美食推荐')">
+            🍜 {{ userLocation.city || userLocation.province }}美食推荐
+          </button>
+        </div>
       </div>
 
       <div
@@ -173,7 +255,7 @@ onUnmounted(() => {
       <div class="input-wrapper">
         <textarea
           v-model="inputMessage"
-          placeholder="描述您的旅行需求..."
+          :placeholder="userLocation ? `描述您的旅行需求...（例如：从${userLocation.city || userLocation.province}出发）` : '描述您的旅行需求...'"
           @keydown.enter.exact.prevent="sendMessage"
           :disabled="isLoading"
           itemprop="message" 
@@ -302,6 +384,105 @@ onUnmounted(() => {
   text-align: center;
   color: var(--text-secondary);
   padding: 40px 20px;
+}
+
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+  max-width: 600px;
+}
+
+.quick-btn {
+  padding: 10px 16px;
+  background: rgba(79, 70, 229, 0.1);
+  border: 1px solid rgba(79, 70, 229, 0.3);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.quick-btn:hover {
+  background: rgba(79, 70, 229, 0.2);
+  border-color: rgba(79, 70, 229, 0.5);
+  transform: translateY(-2px);
+}
+
+.location-tip {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.95), rgba(139, 92, 246, 0.95));
+  backdrop-filter: blur(10px);
+  padding: 12px 24px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(79, 70, 229, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 100;
+  animation: slideDown 0.3s ease-out;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.location-icon {
+  font-size: 1.2rem;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+.location-text {
+  color: #fff;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.location-text strong {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.tip-hint {
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-down-enter-from,
+.slide-down-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -20px);
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
 .welcome-icon {
